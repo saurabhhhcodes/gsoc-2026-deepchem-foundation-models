@@ -1,0 +1,23 @@
+name: Python Quality Check
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install flake8 black isort deepchem
+      - name: Verify formatting (Black)
+        run: black --check .
+      - name: Lint with flake8
+        run: flake8 .

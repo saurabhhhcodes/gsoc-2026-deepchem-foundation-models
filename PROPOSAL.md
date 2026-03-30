@@ -3,73 +3,74 @@
 **Target Organization**: DeepChem (Computational Biology)  
 **Project Size**: 350 Hours (Large)  
 **Contributor**: Saurabh Kumar Bajpai  
-**Status**: DRAFT  
+**Status**: ENHANCED (Mentor-Ready)
 
 ---
 
 ## 1. Project Overview
-DeepChem has democratized deep learning for drug discovery. As the field shifts toward large-scale foundation models for biological sequences (DNA, RNA, Proteins), there is a critical need to integrate these models into the core DeepChem ecosystem. This project proposes the integration of state-of-the-art **DNA and Single-Cell Foundation Models** using a unified `HuggingFaceModel` wrapper, providing researchers with plug-and-play access to biological LLMs.
+This project proposes the integration of state-of-the-art **DNA and Single-Cell Foundation Models** into DeepChem using a unified **HuggingFaceModel** wrapper. This will provide researchers with plug-and-play access to multi-billion parameter biological LLMs.
 
-### 1.1 The Vision: Unified Foundation Model Access
-We aim to bridge the gap between high-level DeepChem workflows and low-level HuggingFace transformer architectures. By implementing specialized tokenizers and fine-tuning pipelines, we can enable:
-- **Zero-shot property prediction** for DNA sequences.
-- **Single-cell transcriptomics analysis** using pretrained scBERT or Geneformer-style architectures.
-- **Interoperability** between `deepchem.models` and the `transformers` library.
+### 1.1 Genomic LLM Pipeline (Mermaid)
+
+```mermaid
+graph LR
+    A[Raw DNA FASTA] -->|K-mer| B[Genomic Tokenizer]
+    B -->|Attention Masks| C[Transformer Blocks]
+    C -->|Latent Embeddings| D[DeepChem Model Wrapper]
+    D --> E[Property Prediction]
+    D --> F[Sequence Generation]
+    E --> G[Scientific Benchmarking]
+```
 
 ---
 
-## 2. Proposed Architecture
+## 2. Technical Deep-Dive
 
-### 2.1 Technology Stack
-- **Frameworks**: PyTorch, DeepChem Core, HuggingFace Transformers, JAX.
-- **Tokenization**: `KmerTokenizer` for DNA, specialized gene-rank tokenizers for single-cell data.
-- **Models**: OLMo-DNA, ChemBERTa-v2, and scBERT/Geneformer.
-- **Hardware Optimization**: Mixed-precision training (FP16/BF16) and distributed data parallelism (DDP) for large-scale fine-tuning.
+### 2.1 The Genomic Tokenizer Engine
+DNA sequences require specialized tokenization unlike natural language. I will implement:
+- **K-mer Tokenization**: Support for overlapping and non-overlapping k-mer strategies.
+- **DeepChem Integration**: Extending `dc.feat.MolnetTokenizer` for genomic-scale datasets.
+- **Interoperability**: Seamlessly converting `AnnData` (single-cell) formats into DeepChem-compatible tensors.
 
-### 2.2 Component Breakdown
-1. **`DNAFoundationModel` Wrapper**: An extension of `HuggingFaceModel` tailored for genomic k-mer sequences.
-2. **Single-Cell Pipeline**: A data-loader and model-wrapper for large-scale transcriptomic counting matrices.
-3. **Benchmarking Suite**: A set of standardized tasks (e.g., DNA promoter identification, cell-type annotation) using DeepChem’s `Evaluator`.
+### 2.2 Foundation Model Scaling
+To handle 7B+ parameter models (like OLMo-DNA) on research hardware:
+- **Mixed Precision**: Implementing BF16/FP16 training loops in the `dc.models` layer.
+- **Gradient Checkpointing**: Ensuring large biological sequences can fit within standard GPU memory constraints (V100/A100).
+- **LoRA/QLoRA**: Providing adapters for parameter-efficient fine-tuning of foundation models on niche biological tasks.
 
 ---
 
 ## 3. Implementation Plan (12 Weeks)
 
 ### Phase 1: Genomic Foundation (Weeks 1-3)
-- Integrate OLMo-DNA or similar open genomic LLMs into a `deepchem` wrapper.
-- Implement robust k-mer based tokenization with support for overlapping and non-overlapping windows.
-- Add preliminary docs and unit tests for the `HuggingFaceModel` genomic extensions.
+- [ ] Implement `DNAFoundationModel` extensions for HuggingFace integration.
+- [ ] Develop high-performance K-mer tokenizers with custom windowing.
+- [ ] Baseline testing on the DeepChem `GENIE` benchmark.
 
 ### Phase 2: Single-Cell Integration (Weeks 4-7)
-- Develop a `dc.data.DataLoader` for common single-cell formats (AnnData, Loom).
-- Implement scBERT-style architectures within the DeepChem model ecosystem.
-- Fine-tune single-cell foundation models on public datasets like the Human Cell Atlas (HCA).
+- [ ] Build the `scBERT` and `Geneformer` model wrappers.
+- [ ] Create an automated pipeline for AnnData-to-DeepChem conversion.
+- [ ] Fine-tune sc-models on cell-type annotation tasks.
 
-### Phase 3: Benchmarking & Scaling (Weeks 8-10)
-- Create a standardized benchmarking framework for biological LLMs within DeepChem.
-- Evaluate performance across multiple downstream tasks: toxicity prediction, binding affinity, and single-cell annotation.
-- Optimize memory usage using gradient checkpointing and weight sharding.
+### Phase 3: Scaling & Optimization (Weeks 8-10)
+- [ ] Integrate mixed-precision training and gradient checkpointing.
+- [ ] Benchmark scaling performance across 1B, 3B, and 7B parameter models.
+- [ ] Implement LoRA support for genomic LLMs.
 
-### Phase 4: Documentation & Community (Weeks 11-12)
-- Publish a series of "DeepChem x Biological RLHF" tutorials in the `examples` folder.
-- Finalize the `CONTRIBUTING.md` for foundation model additions.
-- Conduct a final walkthrough with mentors to ensure the infrastructure is production-ready.
-
----
-
-## 4. Personal Background & Motivation
-My background in Biotechnology and AI Engineering makes me a strong candidate for this project:
-- **BioAgent-ALPHAFOLD**: Researched agentic workflows for protein structure prediction.
-- **OpenBioGen AI & GeneInsight**: Developed RAG systems for genomic data retrieval and DNA analysis.
-- **Winner of Global Agent.AI Challenge**: Proven ability to handle complex, scalable AI system architectures.
-
-I am eager to contribute to DeepChem’s mission of making drug discovery tools accessible to everyone.
+### Phase 4: Finalization (Weeks 11-12)
+- [ ] Finalize the "Bio-Foundation" tutorials in the `examples` folder.
+- [ ] Technical documentation for the new `dc.models.genomics` package.
+- [ ] Community handover and final review.
 
 ---
+
+## 4. Why me?
+- **AI-Bio Specialist**: Background in Biotechnology and AI Engineering (Akoode Technologies).
+- **BioAgent-ALPHAFOLD**: Researched agentic workflows for protein structure and DNA prediction.
+- **Winner of Global Agent.AI Challenge**: Proven history of shipping high-impact AI systems.
 
 ## 5. Deliverables
-- [ ] `HuggingFaceModel` extensions for DNA and Single-cell architectures.
-- [ ] Optimized DNA k-mer tokenizers.
-- [ ] scBERT/Geneformer implementation in DeepChem.
-- [ ] Benchmarking report on biological sequence property prediction.
-- [ ] Interactive tutorials for researchers.
+- [ ] `DNAFoundationModel` & `SingleCellModel` wrappers.
+- [ ] High-performance Genomic Tokenizers.
+- [ ] LoRA fine-tuning infrastructure for Bio-LLMs.
+- [ ] Comprehensive benchmarking report.
